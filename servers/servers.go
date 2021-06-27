@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/friendsofgo/errors"
+	"github.com/go-chi/chi/v5"
 	"github.com/rs/zerolog"
 	"golang.org/x/crypto/acme/autocert"
 )
@@ -40,7 +41,7 @@ func (s serverErrLogger) Write(b []byte) (int, error) {
 type Builder func(*Config) error
 
 type Config struct {
-	router http.Handler
+	router chi.Router
 
 	httpBind string
 
@@ -252,7 +253,7 @@ func NewBasicAutocertManager(domains ...string) *autocert.Manager {
 //
 // If WithHTTP is used alongside WithHTTPS/LetsEncrypt/TLS then the bind port (usually :80) will act as a
 // redirector to the SSL port. You can also specify custom timeouts using WithTimeouts.
-func New(router http.Handler, logger zerolog.Logger, builders ...Builder) (*Config, error) {
+func New(router chi.Router, logger zerolog.Logger, builders ...Builder) (*Config, error) {
 	killChan := make(chan struct{})
 
 	cfg := &Config{
